@@ -1,5 +1,3 @@
-const { mousePressed } = require("p5");
-
 const dimension = document.getElementById("dim")
 const colorScheme = document.getElementById("colorScheme");
 const colorSubmitButton = document.getElementById("colorSubmitButton");
@@ -16,11 +14,15 @@ let y;
 let w;
 let continueDrawing;
 let colorFormula = 0;
+let mouseRGB = "";
+let isClicked = false;
 
 function initialise(){
     cells = [];
     y = 100;
-    w = 3;
+    w = 10;
+    isClicked = false;
+    mouseRGB = "";
     clear();
     ruleSet = ruleValue.toString(2).padStart(8, "0");
 
@@ -37,10 +39,9 @@ function setup() {
     initialise();
     
     colorSubmitButton.addEventListener("click", (e) => {
-        const [isClicked, rgb] = mousePressed();
 
         if (isClicked)
-            colorFormula = rgb;
+            colorFormula = mouseRGB;
         else
             colorFormula = colorScheme.value;
 
@@ -98,17 +99,20 @@ function draw1D(colorFormula, y) {
 }
 
 function mousePressed(){
-    loadPixels();
+    if (mouseY > 100){
+        loadPixels();
 
-    let i = 4 * (floor(mouseY) * width + floor(mouseX));
-    let r = pixels[i];
-    let g = pixels[i + 1];
-    let b = pixels[i + 2];
-    let a = pixels[i + 3];
+        let i = 4 * (floor(mouseY) * width + floor(mouseX));
+        let r = pixels[i];
+        let g = pixels[i + 1];
+        let b = pixels[i + 2];
+        let a = pixels[i + 3];
 
-    console.log(`RGB: ${r}, ${g}, ${b} | Alpha: ${a}`);
+        console.log(`RGB: ${r}, ${g}, ${b} | Alpha: ${a}`);
 
-    return [true, r + "," + g + "," + "b"];
+        isClicked = true;
+        mouseRGB = r + "," + g + "," + b;
+    }
 }
 
 function calculateState(a,b,c){

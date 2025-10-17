@@ -1,3 +1,5 @@
+const { mousePressed } = require("p5");
+
 const dimension = document.getElementById("dim")
 const colorScheme = document.getElementById("colorScheme");
 const colorSubmitButton = document.getElementById("colorSubmitButton");
@@ -7,8 +9,8 @@ dimension.addEventListener("change", (e) => {
 });
 
 
-let cells = [];
-let ruleValue = 90;
+let cells;
+let ruleValue = 178;
 let ruleSet;
 let y;
 let w;
@@ -16,15 +18,17 @@ let continueDrawing;
 let colorFormula = 0;
 
 function initialise(){
+    cells = [];
+    y = 100;
+    w = 3;
+    clear();
     ruleSet = ruleValue.toString(2).padStart(8, "0");
 
     let total = width / w;
     for (let i = 0; i < total; i++) {
-      cells[i] = floor(random(2));
-    }
-    y = 100;
-    w = 5;
-}
+        cells[i] = floor(random(2));
+    };
+};
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -33,7 +37,13 @@ function setup() {
     initialise();
     
     colorSubmitButton.addEventListener("click", (e) => {
-        let colorFormula = colorScheme.value;
+        const [isClicked, rgb] = mousePressed();
+
+        if (isClicked)
+            colorFormula = rgb;
+        else
+            colorFormula = colorScheme.value;
+
         console.log(colorFormula);
         continueDrawing = true;
 
@@ -50,11 +60,10 @@ function setup() {
 }
 
 function draw1D(colorFormula, y) {
-
      if (floor(random(50)) == 1){
          ruleValue = floor(random(255));
          ruleSet = ruleValue.toString(2).padStart(8, "0");
-    } 
+    };
 
     let nextCells = [];
     let previousCells = [];
@@ -86,6 +95,20 @@ function draw1D(colorFormula, y) {
 
     cells = nextCells;
 
+}
+
+function mousePressed(){
+    loadPixels();
+
+    let i = 4 * (floor(mouseY) * width + floor(mouseX));
+    let r = pixels[i];
+    let g = pixels[i + 1];
+    let b = pixels[i + 2];
+    let a = pixels[i + 3];
+
+    console.log(`RGB: ${r}, ${g}, ${b} | Alpha: ${a}`);
+
+    return [true, r + "," + g + "," + "b"];
 }
 
 function calculateState(a,b,c){

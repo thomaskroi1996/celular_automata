@@ -1,43 +1,63 @@
-// Array to store the state of each cell.
+const dimension = document.getElementById("dim")
+const colorScheme = document.getElementById("colorScheme");
+const colorSubmitButton = document.getElementById("colorSubmitButton");
+
+dimension.addEventListener("change", (e) => {
+    console.log(e.target.value)
+});
+
+
 let cells = [];
-// Rule value
 let ruleValue = 90;
-// The ruleset string
 let ruleSet;
-// Width of each cell in pixels
-let w = 1;
-// y-position
-let y = 0;
+let y;
+let w;
+let continueDrawing;
+let colorFormula = 0;
 
-function setup() {
-    createCanvas(800, 800);
-
-    // Convert the rule value to a binary string.
+function initialise(){
     ruleSet = ruleValue.toString(2).padStart(8, "0");
-  
-    // Calculate the total number of cells based on canvas width.
+
     let total = width / w;
-    // Initialize all cells to state 0 (inactive).
     for (let i = 0; i < total; i++) {
       cells[i] = floor(random(2));
     }
-    // Set the middle cell to state 1 (active) as the initial condition.
-    cells[floor(total / 2)] = 1;
-    background(255);
+    y = 100;
+    w = 5;
 }
-  
-function draw() {
-    for (let i = 0; i < cells.length; i++) {
-        let x = i * w;
-        noStroke();
-        fill(255 - cells[i] * 255);
-        square(x, y, w);
-      }
+
+function setup() {
+    createCanvas(windowWidth, windowHeight);
+    background(220);
+
+    initialise();
     
-      // Move to the next row.
+    colorSubmitButton.addEventListener("click", (e) => {
+        let colorFormula = colorScheme.value;
+        console.log(colorFormula);
+        continueDrawing = true;
+
+        const interval = setInterval(() => {
+            draw1D(colorFormula, y);
+            y += w;
+            if (y >= 1000) {
+              clearInterval(interval);
+              continueDrawing = false;
+            }
+        }, 1);
+        initialise();
+    });
+}
+
+function draw1D(colorFormula, y) {
+
+     if (floor(random(50)) == 1){
+         ruleValue = floor(random(255));
+         ruleSet = ruleValue.toString(2).padStart(8, "0");
+    } 
 
     let nextCells = [];
-
+    let previousCells = [];
     let len = cells.length;
 
     for (let i=0; i < len; i++){
@@ -48,16 +68,32 @@ function draw() {
         nextCells[i] = newState;
     }
 
+    previousCells = [];
+
+    for (let i = 0; i < len; i++) {
+        let x = i * w;
+        noStroke();
+        Function('fill', 'cells', 'nextCells', 'previousCells', 'y', 'i', `fill(${colorFormula});`)(
+            fill,
+            cells,
+            nextCells,
+            previousCells,
+            y,
+            i
+        );
+        square(x, y, w);
+      }
+
     cells = nextCells;
 
-    y == 800 ? y = 0 : y += w;
 }
 
 function calculateState(a,b,c){
-    // Create a string representing the state of the cell and its neighbors.
     let neighborhood = "" + a + b + c;
-    // Convert the string to a binary number
     let value = 7 - parseInt(neighborhood, 2);
-    // Return the new state based on the ruleset.
     return parseInt(ruleSet[value]);
 }
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+  }

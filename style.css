@@ -1,0 +1,39 @@
+#canvas1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+}
+.dimension {
+    position: absolute;
+    z-index: 10;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.colorScheme {
+    position: absolute;
+    z-index: 10;
+    width: 100px;
+    top: 50px;
+    left: 70%;
+}
+.inputBox {
+    width: 500px;
+    transform: translateX(-30%);
+}
+.controls, select, option {
+    font-size: 15px;
+}
+body {
+    margin: 0;
+    display: flex;
+  
+    /* This centers our sketch horizontally. */
+    justify-content: center;
+  
+    /* This centers our sketch vertically. */
+    align-items: center;
+}
